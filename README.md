@@ -17,3 +17,4 @@ Add your OpenWeatherMap API key as a **Space Secret** named `API_KEY`.
 Settings → Variables and Secrets → New Secret → Name: `API_KEY`
 
 Get a free key at: https://openweathermap.org/api
+Demo link:- https://huggingface.co/spaces/AlphaCoder7206/WEATHER_REPORT
