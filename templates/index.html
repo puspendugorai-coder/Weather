@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atmos — Weather & Air Quality</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+  <div class="noise"></div>
+
+  <div class="page">
+
+    <header class="header">
+      <div class="logo">
+        <span class="logo-mark">◈</span>
+        <span class="logo-text">ATMOS</span>
+      </div>
+      <p class="tagline">Real-time Weather &amp; Air Quality</p>
+    </header>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="cityInput" placeholder="Enter any city…"
+               autocomplete="off" spellcheck="false" />
+        <button id="searchBtn">
+          <span class="btn-text">Search</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+      <p class="search-hint" id="searchHint">Search a city to see live conditions</p>
+    </div>
+
+    <div class="loader hidden" id="loader">
+      <div class="loader-ring"></div>
+      <span>Fetching data…</span>
+    </div>
+
+    <div class="error-box hidden" id="errorBox">
+      <span class="error-icon">⚠</span>
+      <span id="errorMsg"></span>
+    </div>
+
+    <div class="results hidden" id="results">
+
+      <!-- Main weather card -->
+      <div class="card main-card">
+        <div class="main-top">
+          <div class="main-location">
+            <h2 class="city-name" id="cityName"></h2>
+            <p class="country" id="countryName"></p>
+          </div>
+          <div class="condition-icon" id="conditionIcon"></div>
+        </div>
+
+        <div class="temp-block">
+          <span class="temp-main" id="tempMain"></span>
+          <span class="temp-unit">°C</span>
+        </div>
+
+        <p class="condition-desc" id="conditionDesc"></p>
+
+        <div class="temp-range">
+          <span class="range-item">↑ <strong id="tempMax"></strong>°C</span>
+          <span class="sep">·</span>
+          <span class="range-item">↓ <strong id="tempMin"></strong>°C</span>
+          <span class="sep">·</span>
+          <span class="range-item">Feels <strong id="feelsLike"></strong>°C</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="stat-grid">
+          <div class="stat-item">
+            <span class="stat-icon">💧</span>
+            <span class="stat-label">Humidity</span>
+            <span class="stat-value" id="humidity"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">👁</span>
+            <span class="stat-label">Visibility</span>
+            <span class="stat-value" id="visibility"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">🌡</span>
+            <span class="stat-label">Pressure</span>
+            <span class="stat-value" id="pressure"></span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">💨</span>
+            <span class="stat-label">Wind</span>
+            <span class="stat-value" id="wind"></span>
+          </div>
+        </div>
+
+        <div class="wind-bar">
+          <div class="wind-bar-track">
+            <div class="wind-bar-fill" id="windBarFill"></div>
+          </div>
+          <div class="wind-labels">
+            <span>0</span><span>Calm</span><span>Storm</span><span>120 km/h</span>
+          </div>
+        </div>
+
+        <p class="updated-at" id="updatedAt"></p>
+      </div>
+
+      <!-- Right column -->
+      <div class="right-col">
+
+        <!-- AQI card -->
+        <div class="card aqi-card" id="aqiCard">
+          <p class="card-eyebrow">AIR QUALITY INDEX</p>
+          <div class="aqi-display">
+            <div class="aqi-ring-wrap">
+              <svg class="aqi-ring" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r="46" class="ring-track"/>
+                <circle cx="55" cy="55" r="46" class="ring-fill" id="aqiArc"/>
+              </svg>
+              <div class="aqi-center">
+                <span class="aqi-num" id="aqiNum"></span>
+                <span class="aqi-max">/5</span>
+              </div>
+            </div>
+            <div class="aqi-meta">
+              <p class="aqi-badge" id="aqiBadge"></p>
+              <p class="aqi-subtext">Air quality in <span id="aqiCity"></span></p>
+            </div>
+          </div>
+          <div class="pollutant-grid">
+            <div class="pollutant">
+              <span class="poll-name">PM 2.5</span>
+              <span class="poll-val" id="pm25"></span>
+              <span class="poll-unit">μg/m³</span>
+            </div>
+            <div class="pollutant">
+              <span class="poll-name">PM 10</span>
+              <span class="poll-val" id="pm10"></span>
+              <span class="poll-unit">μg/m³</span>
+            </div>
+            <div class="pollutant">
+              <span class="poll-name">O₃</span>
+              <span class="poll-val" id="o3"></span>
+              <span class="poll-unit">μg/m³</span>
+            </div>
+            <div class="pollutant">
+              <span class="poll-name">NO₂</span>
+              <span class="poll-val" id="no2"></span>
+              <span class="poll-unit">μg/m³</span>
+            </div>
+            <div class="pollutant">
+              <span class="poll-name">SO₂</span>
+              <span class="poll-val" id="so2"></span>
+              <span class="poll-unit">μg/m³</span>
+            </div>
+            <div class="pollutant">
+              <span class="poll-name">CO</span>
+              <span class="poll-val" id="co"></span>
+              <span class="poll-unit">μg/m³</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wind compass card -->
+        <div class="card wind-card">
+          <p class="card-eyebrow">WIND DIRECTION</p>
+          <div class="compass-wrap">
+            <canvas id="compass" width="130" height="130"></canvas>
+            <div class="compass-labels">
+              <div class="cl n">N</div>
+              <div class="cl e">E</div>
+              <div class="cl s">S</div>
+              <div class="cl w">W</div>
+            </div>
+          </div>
+          <div class="wind-stats">
+            <div class="ws-item">
+              <span class="ws-val" id="windSpeed2"></span>
+              <span class="ws-label">km/h</span>
+            </div>
+            <div class="ws-item">
+              <span class="ws-val" id="windDir"></span>
+              <span class="ws-label">direction</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
