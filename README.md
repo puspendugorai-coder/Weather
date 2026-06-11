@@ -10,7 +10,7 @@
 [![OpenWeatherMap](https://img.shields.io/badge/OpenWeatherMap-API-orange?style=for-the-badge&logo=OpenWeatherMap&logoColor=white)](https://openweathermap.org/api)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-[🚀 Live Demo](https://weather-wcan.onrender.com) · [🐛 Report Bug](https://github.com/puspendugorai-coder/Weather/issues) · [✨ Request Feature](https://github.com/puspendugorai-coder/Weather/issues)
+[🚀 Live Demo](https://weather-ld55.onrender.com) · [🐛 Report Bug](https://github.com/puspendugorai-coder/Weather/issues) · [✨ Request Feature](https://github.com/puspendugorai-coder/Weather/issues)
 
 </div>
 
